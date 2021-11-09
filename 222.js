@@ -56,7 +56,7 @@ bc.addEventListener('message', function(event) {
 //----------------------------------------------------------------------------CDN
 if (document.location.hostname === "cdn.trovo.live") {
     startCDN();
-    console.dir(`Найден фрейм`);
+    console.dir(`Найден фрейм Запуск программы СДН`);
     function startCDN() {
         setTimeout(() => {
             if (document.querySelector('.box-wrap')) {
@@ -77,6 +77,7 @@ if (document.location.hostname === "cdn.trovo.live") {
 //-------------------------------------------------------------------ОСНОВНАЯ CDN
 function generalCDN() {
     setTimeout(() => {
+        console.dir(`Основная СДН запустилась`);
         let boxNum = parseInt(document.querySelector(".box-num")?.textContent.match(/\d+/g)[0]);
         let price = parseInt(document.querySelector(".price")?.textContent.match(/\d+/g)[0]);
         let priceElix = document.querySelector(".price")?.textContent.includes("Elixir");
@@ -108,7 +109,10 @@ function generalCDN() {
                 }
                 if (area[i].classList == "gift-times") {
                     doneConfirm[i] = 1;
-                    nextTresure();
+                    console.dir(`Задания многоразовые`);
+                    //nextTresure();
+                    //return;
+                    //console.dir(`Задания многоразовые НЕ ищем следующий сундук`);
                 }
                 let done = area[i].querySelector("button");
                 if (done) {
@@ -116,7 +120,7 @@ function generalCDN() {
                         doneConfirm[i] = 1;
                     }
                     if (done.disabled) {
-                        doneConfirm[i] = 1;
+                        doneConfirm[i] = 1; //возможно это надо удалить
                     } else {
                         if ((done.textContent.indexOf("Send") !== -1)||(done.textContent.indexOf("Отправить") !== -1)) {
                             console.dir(`Нажимаем Send/Отправить`);
@@ -146,13 +150,16 @@ function generalCDN() {
                             } else if ((area[i].querySelector(".process")?.innerText.indexOf("On Fire") !== -1) &&
                                        (parseInt(area[i].querySelector(".process")?.textContent.match(/\d+/g) ?? 0) < 2)){
                                 if(priceElix && price > 99 && price*boxNum > 999) {
+                                    console.dir(`Каст Фаер но дорогая коробка`);
                                     nextTresure(); //!!!!!!!убрать после тестов!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     done.click();
                                     window.parent.postMessage({message: "CastFire"}, "*");
                                 } else {
+                                    console.dir(`Каст Фаер но дешевая коробка`);
                                     nextTresure();
                                 }
                             } else {
+                                console.dir(`Просят Каст неизвестного спела`);
                                 nextTresure();
                             }
                         }
@@ -161,23 +168,26 @@ function generalCDN() {
                 console.dir(`элемент ${i+1} равен ${doneConfirm[i]}`);
             }
             if (doneConfirm.every(elem => elem === 1)) {
+                console.dir(`Все задания выполнены ищем следующий сундук`);
                 nextTresure();
             }
         }
         let ended = document.querySelector(".progress-tip");
         if (ended?.textContent.includes("event has ended")){
+            console.dir(`Коробка уже закончилась, ищем следующий сундук`);
             nextTresure();
         }
         let failText = document.querySelector(".fail-text");
         if (failText?.textContent.includes("nothing left")){
+            console.dir(`Во фрейме ничего не найдено, ищем следующий сундук`);
             nextTresure();
         }
         generalCDN();
-    }, Math.random() * 1000 + 10000);
+    }, Math.random() * 5000 + 20000);
 }
 //-----------------------------------------------------------------СЛЕДУЮЩИЙ СУНДУК
 function nextTresure() {
-    console.dir(`ищем следующий сундук`);
+    console.dir(`!Ищем следующий сундук!`);
     let back = document.querySelector(".icon-back");
     if (back) {
         back.dispatchEvent(new Event('click'));
@@ -217,6 +227,7 @@ function nextTresure() {
                     if (blackList.indexOf(name) == -1){
                         console.dir(`сундук НЕ в черном списке`);
                         gift.click();
+                        //gift.dispatchEvent(new Event('click')); // ПОЧЕМУ НЕ РАБОТАЕТ???
                         i = card.length + 1;
                         window.parent.close();
                         break;
